@@ -1,0 +1,9 @@
+D:\Sync2015\开发\CaptureSerialData\SerialDataCapturer\SerialDataCapturer\bin\Debug\SerialDataCapturer.exe.config
+D:\Sync2015\开发\CaptureSerialData\SerialDataCapturer\SerialDataCapturer\obj\Debug\SerialDataCapturer.exe
+D:\Sync2015\开发\CaptureSerialData\SerialDataCapturer\SerialDataCapturer\obj\Debug\SerialDataCapturer.pdb
+D:\Sync2015\开发\CaptureSerialData\SerialDataCapturer\SerialDataCapturer\bin\Debug\SerialDataCapturer.exe
+D:\Sync2015\开发\CaptureSerialData\SerialDataCapturer\SerialDataCapturer\bin\Debug\SerialDataCapturer.pdb
+D:\Sync2015\开发\CaptureSerialData\SerialDataCapturer\SerialDataCapturer\obj\Debug\SerialDataCapturer.csprojResolveAssemblyReference.cache
+D:\Sync2015\开发\CaptureSerialData\SerialDataCapturer\SerialDataCapturer\obj\Debug\SerialDataCapturer.Form1.resources
+D:\Sync2015\开发\CaptureSerialData\SerialDataCapturer\SerialDataCapturer\obj\Debug\SerialDataCapturer.Properties.Resources.resources
+D:\Sync2015\开发\CaptureSerialData\SerialDataCapturer\SerialDataCapturer\obj\Debug\SerialDataCapturer.csproj.GenerateResource.Cache

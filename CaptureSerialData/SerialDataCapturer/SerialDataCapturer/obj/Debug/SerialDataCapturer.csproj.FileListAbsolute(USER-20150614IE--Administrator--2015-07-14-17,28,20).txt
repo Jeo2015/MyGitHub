@@ -1,0 +1,3 @@
+D:\Sync2015\开发\CaptureSerialData\SerialDataCapturer\SerialDataCapturer\bin\Debug\SerialDataCapturer.exe.config
+D:\Sync2015\开发\CaptureSerialData\SerialDataCapturer\SerialDataCapturer\obj\Debug\SerialDataCapturer.exe
+D:\Sync2015\开发\CaptureSerialData\SerialDataCapturer\SerialDataCapturer\obj\Debug\SerialDataCapturer.pdb
