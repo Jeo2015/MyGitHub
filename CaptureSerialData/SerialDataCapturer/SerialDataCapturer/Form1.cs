@@ -20,12 +20,12 @@ namespace SerialDataCapturer
         private Byte[] _sendCommand = new Byte[5];
         private string _sendCommandString = string.Empty;
         private int _baudRate;
-        private byte[] receivedData;
+        private byte[] receivedData = new byte[4096];
         List<byte> listData = new List<byte>();
         private string _serialType;
         private string _description = string.Empty;
         private volatile bool _shouldStop;
-        Thread thread_status = null;
+        //Thread thread_status = null;
         string _lastDataType = string.Empty;
         private static bool g_ConnectedFlag = false;
         public Form1()
@@ -33,15 +33,16 @@ namespace SerialDataCapturer
             try
             {
                 InitializeComponent();
-                XmlService.LoadXml();
+                //SerializeXml.LoadXml();
+                SerializeXml.DeserializeData();
 
-                _baudRate = XmlService.GetBaudRate();
+                _baudRate = SerializeXml.GetBaudRate();
                 this.cbb_BandRate.Items.Add(_baudRate.ToString());
                 this.cbb_BandRate.SelectedIndex = 0;
 
-                List<string> dataType = XmlService.GetallDataType();
+                List<string> dataType = SerializeXml.GetallDataType();
                 this.cbb_DataType.Items.AddRange(dataType.ToArray());
-                _lastDataType = XmlService.GetLastDataType();
+                _lastDataType = SerializeXml.GetLastDataType();
                 if (_lastDataType == "")
                 {
                     this.cbb_DataType.SelectedIndex = 0;
@@ -51,13 +52,14 @@ namespace SerialDataCapturer
                     _serialType = _lastDataType;
                     this.cbb_DataType.SelectedItem = _serialType;
                 }
-                List<string> paths = XmlService.GetSavePath();
+                List<string> paths = SerializeXml.GetSavePath();
                 this.cbb_SavePath.Items.AddRange(paths.ToArray());
-                _lastSavePath = XmlService.GetLastSavePath();
+                _lastSavePath = SerializeXml.GetLastSavePath();
                 if (!System.IO.Directory.Exists(_lastSavePath))
                 {
                     _lastSavePath = string.Empty;
-                    XmlService.SetLastSavePath(_lastSavePath);
+                    SerializeXml.SetLastSavePath(_lastSavePath);
+                    this.cbb_SavePath.SelectedIndex = 0;
                 }
                 else
                 {
@@ -78,14 +80,14 @@ namespace SerialDataCapturer
                     }
                 }
             }
-            catch(Exception ex)
+            catch
             {
                 return;
             }
         }
         private void ShowMsg(string msg)
         {
-            this.tb_TipInfo.BeginInvoke(new Action(() =>
+            this.tb_TipInfo.Invoke(new Action(delegate()
                 { tb_TipInfo.Text = msg; }));
             //Task task = new Task(new Action(() => { tb_TipInfo.Text = msg; }));
         }
@@ -93,13 +95,13 @@ namespace SerialDataCapturer
         {
             try
             {
-                _description = XmlService.GetDescription(this.cbb_DataType.Text);
+                _description = SerializeXml.GetDescription(this.cbb_DataType.Text);
                 this.lb_DataTypeLabel.Text = "描述：" + _description;
-                _sendCommand = XmlService.GetCommandByte(this.cbb_DataType.Text);
+                _sendCommand = SerializeXml.GetCommandByte(this.cbb_DataType.Text);
                 _sendCommandString = BitConverter.ToString(_sendCommand);//.Replace("-", string.Empty);
                 this.lb_CommandVerify.Text = "发送命令：" + _sendCommandString;
                 _lastDataType = this.cbb_DataType.SelectedItem.ToString();
-                XmlService.SetLastDataType(_lastDataType);
+                SerializeXml.SetLastDataType(_lastDataType);
             }
             catch (Exception ex)
             {
@@ -112,7 +114,7 @@ namespace SerialDataCapturer
             try
             {
                 _baudRate = Convert.ToInt32(this.cbb_BandRate.Text);
-                XmlService.SetBaudRate(_baudRate);
+                SerializeXml.SetBaudRate(_baudRate);
             }
             catch (Exception ex)
             {
@@ -165,7 +167,7 @@ namespace SerialDataCapturer
                 if (_lastSavePath != _savePath)
                 {
                     _lastSavePath = _savePath;
-                    XmlService.SetLastSavePath(_lastSavePath);
+                    SerializeXml.SetLastSavePath(_lastSavePath);
                 }
             }
             catch (Exception ex)
@@ -277,13 +279,12 @@ namespace SerialDataCapturer
                 }
                 int length = serialPort1.BytesToRead;
                 receivedData = new byte[length];
-                serialPort1.Read(receivedData, 0, length);
-               // HandlerData(receivedData);
-                listData.AddRange(receivedData);
+                serialPort1.Read(receivedData, 0, length);                
+                HandlerData(receivedData);
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
-                //ShowMsg(ex.Message);
+                ShowMsg(ex.Message);
                 return;
             }
         }
@@ -294,12 +295,11 @@ namespace SerialDataCapturer
                 this.Invoke(new Action(delegate()
                 {                    
                     listData.AddRange(data);
-
                 }));
             }
             catch (Exception ex)
             {
-                //ShowMsg(ex.Message);
+                ShowMsg(ex.Message);
                 return;
             }
         }
@@ -316,21 +316,72 @@ namespace SerialDataCapturer
                 }
                 else
                 {
+                    SerialWrite();
                     ShowMsg("数据读取中...");
                 }
-                SerialWrite();
-              //  serialPort1.g
+                _shouldStop = false;
                 //thread_status = new Thread(new ThreadStart(ThreadMonitorComPort));
-
                 //thread_status.Start();
-                //_shouldStop = false;
-                //while (!_shouldStop)
-                //{
-                //    Thread.Sleep(10);
-                //}
-                ////thread_status.Abort();
-                ////Thread.Sleep(100);
-                //ShowMsg(string.Format("读取完成！"));//共读取{0}B数据！", listData.Count));
+                Task task = new Task(new Action(() =>
+                {
+                    int count = listData.Count;
+                    int equalCount = 0;
+                    while (!_shouldStop)
+                    {
+                        count = listData.Count;
+                        Thread.Sleep(100);
+                        int nowcount = listData.Count;
+
+                        if (count != nowcount)
+                        {
+                            ShowMsg(string.Format("数据读取中...已读取{0}B数据！", listData.Count));
+                            continue;
+                        }
+                        else
+                        {
+                            equalCount++;
+                        }
+                        if (equalCount >= 20)
+                        {
+                            _shouldStop = true;
+                        }
+                    }
+                    Thread.Sleep(200);
+                    ShowMsg(string.Format("读取完成！共读取{0}B数据！", listData.Count));
+                }));
+                task.Start();
+            }
+            catch (Exception ex)
+            {
+                ShowMsg(ex.Message);
+                return;
+            }
+        }
+        public void ThreadMonitorComPort()
+        {
+            try
+            {
+                int count = listData.Count;
+                int equalCount = 0;
+                while (true)
+                {
+                    count = listData.Count;
+                    Thread.Sleep(100);
+                    int nowcount = listData.Count;
+
+                    if (count != nowcount)
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        equalCount++;
+                    }
+                    if (equalCount >= 20)
+                    {
+                        _shouldStop = true;
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -367,38 +418,6 @@ namespace SerialDataCapturer
                 {
                     ShowMsg("串口没有打开！");
                     return;
-                }
-            }
-            catch (Exception ex)
-            {
-                ShowMsg(ex.Message);
-                return;
-            }
-        }
-        public void ThreadMonitorComPort()
-        {
-            try
-            {
-                int count = listData.Count;
-                int equalCount = 0;
-                while (true)
-                {
-                    count = listData.Count;
-                    Thread.Sleep(100);
-                    int nowcount = listData.Count;
-
-                    if (count != nowcount)
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        equalCount++;
-                    }
-                    if (equalCount >= 20)
-                    {
-                        _shouldStop = true;
-                    }
                 }
             }
             catch (Exception ex)
@@ -472,7 +491,7 @@ namespace SerialDataCapturer
                     return;
                 }
                 SegmentMethod saveMethod = new SegmentMethod();
-                saveMethod = XmlService.GetSegentType(_serialType);
+                saveMethod = SerializeXml.GetSegentType(_serialType);
                 if (saveMethod.type == SegmentType.No)
                 {
                     saveMethod.filenames[0] = _savePath + "\\" + DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss") + saveMethod.filenames[0] + ".txt";
@@ -901,20 +920,21 @@ namespace SerialDataCapturer
         }
         private void toolStripButton2_Click(object sender, EventArgs e)
         {
-            string info = "版本 v2.0： 该版本是在kuangzm开发的版本基础上改进而成，由qiaolj在2015-7-14开发完成。\r\n改进主要内容： 增加配置文件，将于工具本身无关的参数采用配置文件来外置，增强工具的通用性。";
+            string info = "版本 v2.0Beta： 该版本是在kuangzm开发的版本基础上改进而成，由qiaolj在2015-7-18开发完成。\r\n改进主要内容： 增加配置文件，将于工具本身无关的参数采用配置文件来外置，增强工具的通用性。";
+            info += "\r\n版本 v2.0： 该版本解决了串口读取时丢失数据的问题。2015-7-20 23:58 qiaolj";
             MessageBox.Show(info);
         }
 
         private void tsbtn_OpenXml_Click(object sender, EventArgs e)
         {
-            if (!System.IO.File.Exists(XmlService.XmlPath))
+            if (!System.IO.File.Exists(SerializeXml.XmlPath))
             {
                 ShowMsg("配置文件不存在...");
                 return;
             }
             else
             {
-                System.Diagnostics.Process.Start(XmlService.XmlPath);
+                System.Diagnostics.Process.Start(SerializeXml.XmlPath);
             }
         }
 
@@ -928,6 +948,16 @@ namespace SerialDataCapturer
             else
             {
                 System.Diagnostics.Process.Start(_savePath);
+            }
+        }
+
+        private void toolStripButton1_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("是否要覆盖原有配置文件？","Warning", MessageBoxButtons.OKCancel) == DialogResult.OK)
+            {
+                SerializeXml.ResetSerializeData();
+
+                MessageBox.Show("创建成功！");
             }
         }
     }

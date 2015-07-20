@@ -1,0 +1,15 @@
+D:\work\SignalAnalysis\bin\Debug\SignalAnalysis.exe.config
+D:\work\SignalAnalysis\bin\Debug\SignalAnalysis.exe
+D:\work\SignalAnalysis\bin\Debug\SignalAnalysis.pdb
+D:\work\SignalAnalysis\bin\Debug\zh-Hans\SignalAnalysis.resources.dll
+D:\work\SignalAnalysis\bin\Debug\ICSharpCode.TextEditor.dll
+D:\work\SignalAnalysis\obj\Debug\SignalAnalysis.SignalAnalysis.resources
+D:\work\SignalAnalysis\obj\Debug\SignalAnalysis.Signal.resources
+D:\work\SignalAnalysis\obj\Debug\SignalAnalysis.Properties.Resources.resources
+D:\work\SignalAnalysis\obj\Debug\SignalAnalysis.SignalAnalysis.zh-Hans.resources
+D:\work\SignalAnalysis\obj\Debug\SignalAnalysis.csproj.GenerateResource.Cache
+D:\work\SignalAnalysis\obj\Debug\zh-Hans\SignalAnalysis.resources.dll
+D:\work\SignalAnalysis\obj\Debug\SignalAnalysis.exe
+D:\work\SignalAnalysis\obj\Debug\SignalAnalysis.pdb
+D:\work\SignalAnalysis\obj\Debug\SignalAnalysis.SelectLineForm.resources
+D:\work\SignalAnalysis\obj\Debug\SignalAnalysis.csprojResolveAssemblyReference.cache

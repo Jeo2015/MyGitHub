@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SerialDataCapture xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <DataType>
+        <Node name="GetAccelerate6" description="三轴G-Sensor+三轴陀螺仪">
+            <Command>0x6e, 0x01, 0x08, 0x01, 0x8f</Command>
+            <SaveFile>
+                <Segment>Cycle</Segment>
+                <FileName name="三轴G-Sensor" type="int16" cycle="3" />
+                <FileName name="三轴陀螺仪" type="int16" cycle="3" />
+            </SaveFile>
+        </Node>
+        <Node name="GetAccelerate3" description="三轴G-Sensor">
+            <Command>0x6e, 0x01, 0x07, 0x01, 0x8f</Command>
+            <SaveFile>
+                <Segment>No</Segment>
+                <FileName name="三轴G-Sensor" type="int16" cycle="3" />
+            </SaveFile>
+        </Node>
+        <Node name="GetAccelerate" description="旧三轴G-Sensor">
+            <Command>0x24, 0x24, 0x08, 0x26, 0x26</Command>
+            <SaveFile>
+                <Segment>No</Segment>
+                <FileName name="旧三轴G-Sensor" type="int16" cycle="3" />
+            </SaveFile>
+        </Node>
+        <Node name="GetHeartrate" description="心率">
+            <Command>0x6e, 0x01, 0x06, 0x01, 0x8f</Command>
+            <SaveFile>
+                <Segment>No</Segment>
+                <FileName name="心率" type="int32" cycle="1" />
+            </SaveFile>
+        </Node>
+        <Node name="GetAirPressure" description="高度+气压">
+            <Command>0x6e, 0x01, 0x05, 0x01, 0x8f</Command>
+            <SaveFile>
+                <Segment>Byte</Segment>
+                <FileName name="高度" type="int16" cycle="1" />
+                <FileName name="气压" type="int32" cycle="1" />
+            </SaveFile>
+        </Node>
+    </DataType>
+    <SavePath>
+        <Node name="桌面" />
+        <Node name="工具目录" />
+        <Node name="浏览..." />
+    </SavePath>
+    <LastSavePath>D:\Sync2015\开发\CaptureSerialData\SerialDataCapturer\SerialDataCapturer\bin\x64\Release\data</LastSavePath>
+    <LastDataType>GetHeartrate</LastDataType>
+    <BaudRate>115200</BaudRate>
+</SerialDataCapture>
